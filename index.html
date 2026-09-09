@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz POO & UML</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --bg-card: #121826;
+      --bg-card-hover: #1a2336;
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --shadow: 0 10px 40px rgba(0,0,0,0.4);
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 20% -20%, rgba(99,102,241,0.25), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(168,85,247,0.2), transparent),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(236,72,153,0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.6s ease;
+    }
+
+    .header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Performance Panel */
+    .performance {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow);
+      animation: fadeInUp 0.5s ease 0.1s both;
+    }
+
+    .performance h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .perf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+    }
+
+    .perf-item {
+      background: rgba(99,102,241,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .perf-item .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .perf-item .value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary-light);
+    }
+
+    .perf-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 12px;
+      font-size: 1.05rem;
+    }
+
+    /* Cards Grid */
+    .provas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      animation: fadeInUp 0.5s ease 0.2s both;
+    }
+
+    .prova-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .prova-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .prova-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(99,102,241,0.4);
+      box-shadow: 0 20px 40px rgba(99,102,241,0.15);
+      background: var(--bg-card-hover);
+    }
+
+    .prova-card:hover::before {
+      opacity: 1;
+    }
+
+    .prova-card.completed {
+      border-color: rgba(34,197,94,0.3);
+    }
+
+    .prova-card.completed::before {
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      opacity: 1;
+    }
+
+    .prova-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .prova-info {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .prova-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    .prova-nota {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99,102,241,0.45);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(99,102,241,0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(99,102,241,0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(99,102,241,0.25);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Quiz Screen */
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .quiz-progress-text {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .quiz-back {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .quiz-back:hover {
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    .progress-bar-container {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
+      animation: slideIn 0.35s ease;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .difficulty {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .diff-facil { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .diff-medio { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .diff-dificil { background: rgba(239,68,68,0.15); color: #f87171; }
+
+    .alternatives {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .alt-btn {
+      background: rgba(30,41,59,0.6);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .alt-btn:hover {
+      border-color: rgba(99,102,241,0.5);
+      background: rgba(99,102,241,0.08);
+    }
+
+    .alt-btn.selected {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.15);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+
+    .alt-letter {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(99,102,241,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--primary-light);
+    }
+
+    .alt-btn.selected .alt-letter {
+      background: var(--primary);
+      color: white;
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Result Screen */
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      max-width: 520px;
+      margin: 0 auto;
+      animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .result-card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .titulacao {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 24px 0;
+      padding: 16px 24px;
+      border-radius: 12px;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+
+    .titulacao.aura-maxima {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+      color: #1a1a1a;
+      font-size: 1.8rem;
+      box-shadow: 0 0 40px rgba(251,191,36,0.5);
+    }
+
+    .titulacao.aura-absurda { background: rgba(239,68,68,0.2); color: #f87171; }
+    .titulacao.aura-insana { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .titulacao.aura-braba { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .titulacao.aura-desenvolvimento { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .titulacao.aura-questionavel { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .titulacao.aura-burro { background: rgba(100,116,139,0.2); color: #94a3b8; }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 28px 0;
+    }
+
+    .stat {
+      background: rgba(30,41,59,0.5);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .stat .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .stat .value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .stat .value.nota { color: var(--primary-light); }
+    .stat .value.acertos { color: var(--success); }
+    .stat .value.erros { color: var(--danger); }
+    .stat .value.perc { color: var(--warning); }
+
+    .result-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .funny-msg {
+      margin-top: 16px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container { padding: 16px 14px 40px; }
+      .question-card { padding: 24px 18px; }
+      .question-text { font-size: 1.1rem; }
+      .result-card { padding: 36px 20px; }
+      .result-stats { grid-template-columns: 1fr 1fr; }
+      .perf-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HOME SCREEN -->
+    <div id="home" class="screen active">
+      <div class="header">
+        <h1>QUIZ POO & UML</h1>
+        <p>Teste seus conhecimentos em Programação Orientada a Objetos e UML</p>
+      </div>
+
+      <div class="performance" id="performance-panel">
+        <h2>📊 Seu Desempenho</h2>
+        <div id="perf-content"></div>
+      </div>
+
+      <div class="provas-grid" id="provas-grid"></div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz" class="screen">
+      <div class="quiz-header">
+        <button class="quiz-back" onclick="voltarHome()">← Voltar</button>
+        <span class="quiz-progress-text" id="questao-num">Questão 1 de 20</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar" style="width: 5%"></div>
+      </div>
+      <div class="question-card" id="question-card">
+        <span class="difficulty" id="diff-badge">Fácil</span>
+        <div class="question-text" id="question-text"></div>
+        <div class="alternatives" id="alternatives"></div>
+        <div class="quiz-actions">
+          <button class="btn btn-primary" id="btn-next" disabled onclick="proximaQuestao()">Próxima</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result" class="screen">
+      <div class="result-card" id="result-card">
+        <h2>PROVA CONCLUÍDA!</h2>
+        <div class="titulacao" id="titulacao"></div>
+        <div class="result-stats">
+          <div class="stat">
+            <div class="label">Nota</div>
+            <div class="value nota" id="res-nota">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Aproveitamento</div>
+            <div class="value perc" id="res-perc">0%</div>
+          </div>
+          <div class="stat">
+            <div class="label">Acertos</div>
+            <div class="value acertos" id="res-acertos">0 / 20</div>
+          </div>
+          <div class="stat">
+            <div class="label">Erros</div>
+            <div class="value erros" id="res-erros">0 / 20</div>
+          </div>
+        </div>
+        <p class="funny-msg" id="funny-msg"></p>
+        <div class="result-actions">
+          <button class="btn btn-primary" onclick="refazerProva()">Fazer Novamente</button>
+          <button class="btn btn-secondary" onclick="voltarHome()">Voltar às Provas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===================== DADOS DAS QUESTÕES =====================
+    const provas = {
+      1: [
+        {
+          q: "O que é um objeto em Programação Orientada a Objetos?",
+          a: ["Uma variável global do sistema", "Uma instância de uma classe que possui estado e comportamento", "Um tipo de dado primitivo", "Uma função que retorna valores"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual princípio de POO permite ocultar os detalhes internos de implementação de uma classe?",
+          a: ["Herança", "Polimorfismo", "Encapsulamento", "Abstração"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Em UML, qual diagrama é usado para modelar a estrutura estática de um sistema mostrando classes e seus relacionamentos?",
+          a: ["Diagrama de Sequência", "Diagrama de Casos de Uso", "Diagrama de Classes", "Diagrama de Atividades"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "O que significa a multiplicidade 1..* em um relacionamento UML?",
+          a: ["Exatamente um", "Zero ou um", "Um ou mais", "Zero ou mais"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Qual modificador de visibilidade em UML é representado pelo símbolo '-' (hífen)?",
+          a: ["public", "protected", "private", "package"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Herança em POO permite que uma classe:",
+          a: ["Tenha apenas métodos estáticos", "Herde atributos e métodos de outra classe", "Seja convertida em interface", "Ignore o encapsulamento"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual é a diferença principal entre agregação e composição?",
+          a: ["Não há diferença", "Na composição, o todo e a parte têm o mesmo ciclo de vida; na agregação não", "Agregação é mais forte que composição", "Composição só existe em Java"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em um diagrama de sequência UML, o que representa uma seta sólida com ponta aberta?",
+          a: ["Retorno de mensagem", "Mensagem síncrona", "Mensagem assíncrona", "Criação de objeto"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é polimorfismo?",
+          a: ["Capacidade de uma classe ter múltiplos construtores", "Capacidade de objetos de diferentes classes responderem à mesma mensagem de formas distintas", "Uso de múltiplas heranças", "Criação de classes abstratas"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Uma classe abstrata:",
+          a: ["Pode ser instanciada normalmente", "Não pode ter métodos concretos", "Não pode ser instanciada e pode conter métodos abstratos e concretos", "Só pode ter atributos estáticos"],
+          c: 2, d: "medio"
+        },
+        {
+          q: "No diagrama de casos de uso, o ator representa:",
+          a: ["Uma classe do sistema", "Um papel que interage com o sistema", "Um método público", "Um atributo privado"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual relacionamento UML indica que uma classe usa outra de forma temporária?",
+          a: ["Herança", "Composição", "Dependência", "Realização"],
+          c: 2, d: "medio"
+        },
+        {
+          q: "O princípio de abstração consiste em:",
+          a: ["Esconder todos os métodos", "Focar nos aspectos essenciais e ignorar detalhes irrelevantes", "Criar apenas classes concretas", "Usar apenas interfaces"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Em UML, o símbolo '+' indica visibilidade:",
+          a: ["private", "protected", "public", "package"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Uma interface em POO:",
+          a: ["Pode ter implementação completa de métodos", "Define um contrato que classes devem implementar", "Pode ser instanciada diretamente", "Substitui completamente as classes abstratas"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual é o propósito principal do diagrama de sequência?",
+          a: ["Mostrar a estrutura de classes", "Modelar a interação entre objetos ao longo do tempo", "Representar os casos de uso do sistema", "Definir o layout da interface gráfica"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é sobrecarga de métodos (overloading)?",
+          a: ["Métodos com o mesmo nome e mesma assinatura", "Métodos com o mesmo nome mas parâmetros diferentes", "Métodos que sobrescrevem a classe pai", "Métodos estáticos apenas"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Na composição UML, a destruição do objeto 'todo' implica:",
+          a: ["Nada acontece com as partes", "As partes também são destruídas", "As partes se tornam independentes", "As partes viram classes abstratas"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual conceito permite que uma subclasse forneça sua própria implementação de um método da superclasse?",
+          a: ["Overloading", "Overriding (sobrescrita)", "Encapsulamento", "Agregação"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em um diagrama de classes, uma seta com ponta triangular vazada indica:",
+          a: ["Associação", "Agregação", "Generalização (herança)", "Dependência"],
+          c: 2, d: "medio"
+        }
+      ],
+      2: [
+        {
+          q: "Qual dos seguintes NÃO é um pilar fundamental da Programação Orientada a Objetos?",
+          a: ["Encapsulamento", "Herança", "Compilação", "Polimorfismo"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Em UML, multiplicidade 0..1 significa:",
+          a: ["Obrigatório um", "Opcional (zero ou um)", "Muitos", "Exatamente zero"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Uma associação bidirecional em UML indica que:",
+          a: ["Apenas uma classe conhece a outra", "Ambas as classes conhecem uma à outra", "Não há relacionamento", "Há herança entre elas"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que caracteriza uma classe concreta?",
+          a: ["Possui apenas métodos abstratos", "Pode ser instanciada", "Não pode ter atributos", "Deve implementar todas as interfaces do sistema"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "No diagrama de casos de uso, o relacionamento <<include>> indica:",
+          a: ["Uma especialização", "Que um caso de uso inclui obrigatoriamente outro", "Uma herança entre atores", "Uma associação opcional"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual é a principal vantagem do encapsulamento?",
+          a: ["Aumentar o acoplamento", "Proteger o estado interno e controlar o acesso", "Eliminar a necessidade de herança", "Tornar todos os atributos públicos"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Em Java (e na maioria das linguagens OO), uma classe pode herdar de quantas classes?",
+          a: ["Ilimitadas", "Apenas uma (herança simples)", "No máximo duas", "Depende do compilador"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O diamante preenchido em UML representa:",
+          a: ["Agregação", "Composição", "Dependência", "Associação simples"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O diamante vazio (não preenchido) em UML representa:",
+          a: ["Composição", "Agregação", "Herança", "Realização"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é um método construtor?",
+          a: ["Método que destrói o objeto", "Método especial chamado na criação do objeto para inicializá-lo", "Método estático obrigatório", "Método que retorna o tipo da classe"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Em um diagrama de sequência, a linha de vida (lifeline) representa:",
+          a: ["O tempo de execução de um método", "A existência de um objeto ao longo do tempo", "Uma mensagem entre classes", "O final do caso de uso"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual modificador permite acesso apenas dentro da mesma classe e subclasses?",
+          a: ["public", "private", "protected", "default"],
+          c: 2, d: "medio"
+        },
+        {
+          q: "O relacionamento de realização em UML (seta tracejada com triângulo) indica:",
+          a: ["Herança entre classes", "Que uma classe implementa uma interface", "Dependência forte", "Agregação"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Polimorfismo de inclusão (subtipo) ocorre quando:",
+          a: ["Métodos têm o mesmo nome e parâmetros diferentes", "Uma variável de tipo superclasse referencia um objeto de subclasse", "Há sobrecarga de operadores", "Classes não relacionadas compartilham métodos"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Em UML, o estereótipo <<extend>> em casos de uso significa:",
+          a: ["Inclusão obrigatória", "Extensão opcional de um caso de uso base", "Herança entre casos de uso", "Associação com ator"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual afirmação sobre classes abstratas é CORRETA?",
+          a: ["Podem ser instanciadas se tiverem construtor", "Não podem ter atributos", "Podem ter métodos com e sem implementação", "Devem ter apenas métodos abstratos"],
+          c: 2, d: "medio"
+        },
+        {
+          q: "O que é acoplamento em POO?",
+          a: ["Grau de dependência entre classes", "Número de métodos de uma classe", "Nível de herança", "Quantidade de atributos públicos"],
+          c: 0, d: "medio"
+        },
+        {
+          q: "Baixo acoplamento e alta coesão são desejáveis porque:",
+          a: ["Aumentam a complexidade", "Facilitam manutenção, reuso e testes", "Impedem o uso de interfaces", "Eliminam a necessidade de encapsulamento"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em um diagrama de classes, um atributo sublinhado indica que ele é:",
+          a: ["privado", "estático (de classe)", "abstrato", "final"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Qual é a diferença entre associação e dependência em UML?",
+          a: ["Não há diferença", "Associação é um relacionamento estrutural mais forte; dependência é mais fraca e temporal", "Dependência é mais forte que associação", "Associação só existe entre interfaces"],
+          c: 1, d: "dificil"
+        }
+      ],
+      3: [
+        {
+          q: "O que acontece se uma classe concreta não implementar todos os métodos abstratos de sua superclasse abstrata?",
+          a: ["Compila normalmente", "A classe concreta também se torna abstrata (ou erro de compilação)", "Os métodos são implementados automaticamente", "Nada, pois métodos abstratos são opcionais"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em UML, a multiplicidade * (asterisco sozinho) significa:",
+          a: ["Exatamente um", "Zero ou mais", "Um ou mais", "Zero ou um"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual princípio é violado quando uma classe expõe todos os seus atributos como públicos?",
+          a: ["Polimorfismo", "Herança", "Encapsulamento", "Abstração"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Um objeto é caracterizado principalmente por:",
+          a: ["Apenas seus métodos", "Identidade, estado e comportamento", "Somente seus atributos", "O nome da classe"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "No diagrama de sequência, uma mensagem de retorno é representada por:",
+          a: ["Seta sólida preta", "Seta tracejada", "Linha vertical", "Retângulo preenchido"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é uma associação reflexiva?",
+          a: ["Associação entre duas classes diferentes", "Associação de uma classe com ela mesma", "Herança múltipla", "Dependência circular"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em POO, o termo 'instância' refere-se a:",
+          a: ["Uma classe abstrata", "Um objeto criado a partir de uma classe", "Um método estático", "Uma interface"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual visibilidade é representada pelo símbolo '#' em UML?",
+          a: ["public", "private", "protected", "package"],
+          c: 2, d: "medio"
+        },
+        {
+          q: "Uma classe pode implementar quantas interfaces?",
+          a: ["Apenas uma", "Nenhuma", "Múltiplas", "Somente se for abstrata"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "O que é um atributo de classe (estático)?",
+          a: ["Atributo que pertence a cada instância", "Atributo compartilhado por todas as instâncias da classe", "Atributo que não pode ser modificado", "Atributo privado obrigatório"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em um diagrama de casos de uso, o sistema é representado por:",
+          a: ["Um ator", "Um retângulo (fronteira do sistema)", "Uma elipse", "Uma seta"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual afirmação sobre composição está CORRETA?",
+          a: ["A parte pode existir independentemente do todo", "A parte não existe sem o todo", "É o mesmo que agregação", "Só pode ser usada com interfaces"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que significa 'coesão' em uma classe?",
+          a: ["Grau de dependência com outras classes", "Grau em que os elementos da classe trabalham juntos para um propósito único", "Número de métodos públicos", "Nível de herança"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Em UML, um método itálico (ou em itálico) em uma classe indica que ele é:",
+          a: ["estático", "privado", "abstrato", "final"],
+          c: 2, d: "dificil"
+        },
+        {
+          q: "Qual é o principal objetivo do polimorfismo?",
+          a: ["Reduzir o número de classes", "Permitir tratar objetos de diferentes tipos de forma uniforme", "Eliminar a herança", "Tornar todos os métodos estáticos"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Uma dependência em UML é geralmente representada por:",
+          a: ["Linha sólida com seta aberta", "Linha tracejada com seta aberta", "Diamante preenchido", "Triângulo preenchido"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é um getter e um setter?",
+          a: ["Métodos especiais de herança", "Métodos de acesso (leitura e escrita) a atributos privados", "Construtores alternativos", "Métodos estáticos obrigatórios"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Em um diagrama de sequência, o retângulo fino sobre a linha de vida representa:",
+          a: ["O objeto sendo destruído", "A ativação (execução de um método)", "Uma mensagem assíncrona", "O início do caso de uso"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual conceito permite criar hierarquias de classes?",
+          a: ["Encapsulamento", "Herança", "Polimorfismo", "Agregação"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Uma associação com multiplicidade 1 e 0..* indica:",
+          a: ["Relação um-para-um", "Relação um-para-muitos (opcional do lado muitos)", "Relação muitos-para-muitos", "Sem relacionamento"],
+          c: 1, d: "medio"
+        }
+      ],
+      4: [
+        {
+          q: "O que é o princípio de substituição de Liskov (LSP)?",
+          a: ["Classes devem ter apenas um motivo para mudar", "Objetos de uma subclasse devem poder substituir objetos da superclasse sem quebrar o programa", "Interfaces devem ser segregadas", "Dependências devem ser invertidas"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Em UML, qual diagrama melhor modela o comportamento dinâmico de interações entre objetos?",
+          a: ["Diagrama de Classes", "Diagrama de Sequência", "Diagrama de Componentes", "Diagrama de Implantação"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Uma classe que implementa uma interface deve:",
+          a: ["Herdar da interface", "Fornecer implementação para todos os métodos da interface", "Ser abstrata", "Ter o mesmo nome da interface"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que caracteriza o relacionamento de agregação?",
+          a: ["Ciclo de vida compartilhado obrigatório", "Relação 'todo-parte' onde a parte pode existir independentemente", "Herança entre classes", "Dependência fraca apenas"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em POO, 'this' (ou self) refere-se a:",
+          a: ["A classe pai", "A instância atual do objeto", "Um método estático", "A interface implementada"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual é a diferença entre overloading e overriding?",
+          a: ["Não há diferença", "Overloading é mesma classe com assinaturas diferentes; overriding é redefinição em subclasse", "Overriding é na mesma classe", "Overloading só existe em interfaces"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "No diagrama de classes, um papel (role) em uma associação indica:",
+          a: ["O nome do método", "A função que a classe desempenha no relacionamento", "O tipo de herança", "A visibilidade do atributo"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Uma classe abstrata pode ter construtor?",
+          a: ["Não, nunca", "Sim, e ele é chamado pelas subclasses", "Só se for público", "Apenas se não tiver métodos abstratos"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "O que é um diagrama de casos de uso?",
+          a: ["Modelo da estrutura de classes", "Representação das funcionalidades do sistema e interações com atores", "Fluxo de mensagens entre objetos", "Arquitetura de componentes"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual modificador de acesso é o mais restritivo?",
+          a: ["public", "protected", "private", "package/default"],
+          c: 2, d: "facil"
+        },
+        {
+          q: "Em UML, a generalização é o mesmo que:",
+          a: ["Agregação", "Herança", "Composição", "Dependência"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "O que significa alta coesão em uma classe?",
+          a: ["A classe faz muitas coisas não relacionadas", "A classe tem responsabilidade bem definida e focada", "A classe depende de muitas outras", "A classe tem muitos atributos públicos"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Uma mensagem assíncrona em diagrama de sequência é representada por:",
+          a: ["Seta com ponta aberta (stick arrowhead)", "Seta com ponta preenchida", "Linha tracejada", "Retângulo"],
+          c: 0, d: "dificil"
+        },
+        {
+          q: "Qual afirmação sobre interfaces está CORRETA em linguagens modernas (como Java 8+)?",
+          a: ["Interfaces nunca podem ter métodos com implementação", "Interfaces podem ter métodos default e estáticos", "Interfaces podem ter atributos de instância", "Interfaces substituem classes abstratas completamente"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "O encapsulamento ajuda a alcançar:",
+          a: ["Alto acoplamento", "Baixo acoplamento e proteção de dados", "Herança múltipla", "Polimorfismo apenas"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em um relacionamento de composição, quantos 'todos' uma parte pode pertencer ao mesmo tempo?",
+          a: ["Vários", "Apenas um", "Nenhum", "Depende da multiplicidade"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é um método de classe (estático)?",
+          a: ["Método que pertence à instância", "Método que pertence à classe e pode ser chamado sem instância", "Método privado obrigatório", "Método abstrato"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual diagrama UML é mais adequado para mostrar a ordem temporal das interações?",
+          a: ["Diagrama de Classes", "Diagrama de Sequência", "Diagrama de Pacotes", "Diagrama de Objetos"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Uma associação navegável em apenas uma direção é chamada de:",
+          a: ["Bidirecional", "Unidirecional", "Reflexiva", "Agregação"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O princípio 'Favor composition over inheritance' sugere:",
+          a: ["Sempre usar herança", "Preferir composição/agregação em vez de herança quando possível", "Nunca usar interfaces", "Eliminar o encapsulamento"],
+          c: 1, d: "dificil"
+        }
+      ],
+      5: [
+        {
+          q: "Qual dos seguintes é um exemplo clássico de polimorfismo?",
+          a: ["Duas classes com o mesmo nome", "Uma variável do tipo Animal referenciando um objeto Cachorro e chamando fazerSom()", "Dois métodos com nomes diferentes", "Uma classe sem atributos"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Em UML, o estereótipo <<interface>> é usado para:",
+          a: ["Indicar uma classe concreta", "Marcar um elemento como interface", "Representar herança", "Mostrar composição"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que acontece quando um objeto não é mais referenciado em linguagens com garbage collector?",
+          a: ["Permanece na memória para sempre", "Pode ser coletado pelo garbage collector", "É automaticamente salvo em disco", "Vira uma classe abstrata"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Uma classe pode herdar de uma interface?",
+          a: ["Sim, usando extends", "Não, ela implementa a interface", "Sim, se a interface for abstrata", "Apenas em C++"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "No diagrama de sequência, a destruição de um objeto é representada por:",
+          a: ["Uma seta tracejada", "Um X no final da linha de vida", "Um retângulo preto", "Uma linha horizontal"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Qual é a principal diferença entre classe abstrata e interface (conceito clássico)?",
+          a: ["Não há diferença", "Classe abstrata pode ter estado e implementação parcial; interface define apenas contrato", "Interface pode ter construtor", "Classe abstrata não pode ter métodos"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é um atributo derivado em UML?",
+          a: ["Atributo privado", "Atributo cujo valor pode ser calculado a partir de outros", "Atributo estático", "Atributo de interface"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Em POO, o termo 'mensagem' refere-se a:",
+          a: ["Um comentário no código", "A chamada de um método em um objeto", "Um atributo público", "Uma classe abstrata"],
+          c: 1, d: "facil"
+        },
+        {
+          q: "Qual multiplicidade indica que um cliente deve ter pelo menos um pedido?",
+          a: ["0..*", "1..*", "0..1", "*"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que é o diagrama de objetos em UML?",
+          a: ["Mesmo que diagrama de classes", "Instâncias concretas de classes em um momento específico", "Fluxo de atividades", "Casos de uso"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Uma associação qualificadora em UML é usada para:",
+          a: ["Indicar herança", "Particionar o conjunto de objetos relacionados", "Mostrar dependência", "Definir visibilidade"],
+          c: 1, d: "dificil"
+        },
+        {
+          q: "Qual princípio SOLID está mais relacionado ao encapsulamento e coesão?",
+          a: ["Princípio da Responsabilidade Única (SRP)", "Princípio da Inversão de Dependência", "Princípio da Segregação de Interface", "Princípio Aberto/Fechado"],
+          c: 0, d: "dificil"
+        },
+        {
+          q: "Em um diagrama de classes, uma seta com triângulo preenchido (preto) geralmente indica:",
+          a: ["Generalização", "Composição ou agregação (dependendo do contexto, mas tradicionalmente não)", "Realização", "Na notação padrão, triângulo preenchido não é o padrão para generalização (é vazado)"],
+          c: 3, d: "dificil"
+        },
+        {
+          q: "O que é upcasting?",
+          a: ["Converter subclasse para superclasse", "Converter superclasse para subclasse", "Criar nova classe", "Eliminar herança"],
+          c: 0, d: "medio"
+        },
+        {
+          q: "Downcasting é:",
+          a: ["Sempre seguro", "Converter uma referência de superclasse para subclasse (pode precisar de verificação)", "Impossível em POO", "O mesmo que overloading"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual é a finalidade do relacionamento de dependência?",
+          a: ["Indicar que uma classe usa outra de forma temporária", "Criar herança", "Forçar composição", "Definir multiplicidade"],
+          c: 0, d: "medio"
+        },
+        {
+          q: "Em UML, um pacote (package) é usado para:",
+          a: ["Representar um objeto", "Agrupar elementos relacionados e organizar o modelo", "Mostrar sequência de mensagens", "Definir atores"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Uma classe final (ou sealed em algumas linguagens):",
+          a: ["Pode ser herdada livremente", "Não pode ser herdada", "Deve ser abstrata", "Só pode ter métodos estáticos"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "O que representa o retângulo com cantos arredondados em alguns diagramas UML (como atividades)?",
+          a: ["Uma classe", "Uma ação ou atividade", "Um ator", "Uma interface"],
+          c: 1, d: "medio"
+        },
+        {
+          q: "Qual das alternativas melhor descreve o conceito de 'estado' de um objeto?",
+          a: ["Os métodos que ele possui", "Os valores atuais de seus atributos", "O nome da classe", "As interfaces que implementa"],
+          c: 1, d: "facil"
+        }
+      ]
+    };
+
+    // ===================== ESTADO =====================
+    let currentProva = null;
+    let currentQuestao = 0;
+    let respostas = [];
+    let selectedAlt = null;
+
+    // ===================== LOCALSTORAGE =====================
+    function loadProgress() {
+      const data = localStorage.getItem('quizPooUml');
+      return data ? JSON.parse(data) : { notas: {}, concluidas: [] };
+    }
+
+    function saveProgress(data) {
+      localStorage.setItem('quizPooUml', JSON.stringify(data));
+    }
+
+    function getNota(provaId) {
+      const p = loadProgress();
+      return p.notas[provaId] !== undefined ? p.notas[provaId] : null;
+    }
+
+    function setNota(provaId, nota) {
+      const p = loadProgress();
+      p.notas[provaId] = nota;
+      if (!p.concluidas.includes(provaId)) {
+        p.concluidas.push(provaId);
+      }
+      saveProgress(p);
+    }
+
+    // ===================== TITULAÇÃO =====================
+    function getTitulacao(nota) {
+      if (nota === 10) return { texto: '👑 AURA MÁXIMA', classe: 'aura-maxima' };
+      if (nota >= 9.0) return { texto: '🔥 AURA ABSURDA', classe: 'aura-absurda' };
+      if (nota >= 8.0) return { texto: '⚡ AURA INSANA', classe: 'aura-insana' };
+      if (nota >= 7.0) return { texto: '😎 AURA BRABA', classe: 'aura-braba' };
+      if (nota >= 6.0) return { texto: '📚 AURA EM DESENVOLVIMENTO', classe: 'aura-desenvolvimento' };
+      if (nota >= 5.1) return { texto: '🫡 AURA QUESTIONÁVEL', classe: 'aura-questionavel' };
+      return { texto: '🤡 MT BURRO KKKK', classe: 'aura-burro' };
+    }
+
+    function getFunnyMsg(nota) {
+      if (nota === 10) return 'Você é a lenda viva da POO e UML! 🏆';
+      if (nota >= 9) return 'Quase perfeito... mas ainda dá pra melhorar! 🔥';
+      if (nota >= 8) return 'Mandou muito bem! Continua assim.';
+      if (nota >= 7) return 'Bom trabalho! Falta pouco pro nível elite.';
+      if (nota >= 6) return 'Tá no caminho. Estuda mais um pouco!';
+      if (nota >= 5.1) return 'Hmm... revisa esses conceitos aí.';
+      return 'Irmão... abre o livro de novo. 📖🤡';
+    }
+
+    // ===================== RENDER HOME =====================
+    function renderHome() {
+      const progress = loadProgress();
+      const perfContent = document.getElementById('perf-content');
+      const grid = document.getElementById('provas-grid');
+
+      // Performance panel
+      if (progress.concluidas.length === 0) {
+        perfContent.innerHTML = '<div class="perf-empty">Você ainda não realizou nenhuma prova. Bora começar? 👀</div>';
+      } else {
+        const notas = progress.concluidas.map(id => progress.notas[id]);
+        const media = (notas.reduce((a, b) => a + b, 0) / notas.length).toFixed(1);
+        const melhor = Math.max(...notas).toFixed(1);
+        const tit = getTitulacao(parseFloat(melhor));
+
+        perfContent.innerHTML = `
+          <div class="perf-grid">
+            <div class="perf-item">
+              <div class="label">Provas concluídas</div>
+              <div class="value">${progress.concluidas.length}/5</div>
+            </div>
+            <div class="perf-item">
+              <div class="label">Média</div>
+              <div class="value">${media}/10</div>
+            </div>
+            <div class="perf-item">
+              <div class="label">Melhor nota</div>
+              <div class="value">${melhor}/10</div>
+            </div>
+            <div class="perf-item">
+              <div class="label">Titulação atual</div>
+              <div class="value" style="font-size:1rem">${tit.texto}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Cards
+      grid.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const nota = getNota(i);
+        const completed = nota !== null;
+        const card = document.createElement('div');
+        card.className = 'prova-card' + (completed ? ' completed' : '');
+        card.innerHTML = `
+          <div class="prova-num">PROVA ${i}</div>
+          <div class="prova-info">20 questões</div>
+          ${completed ? `
+            <div class="prova-status">✅ Concluída</div>
+            <div class="prova-nota">Nota: ${nota.toFixed(1).replace('.', ',')}/10</div>
+            <button class="btn btn-secondary" onclick="iniciarProva(${i})">Fazer Novamente</button>
+          ` : `
+            <button class="btn btn-primary" onclick="iniciarProva(${i})">Começar Prova</button>
+          `}
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    // ===================== QUIZ LOGIC =====================
+    function iniciarProva(id) {
+      currentProva = id;
+      currentQuestao = 0;
+      respostas = new Array(20).fill(null);
+      selectedAlt = null;
+      showScreen('quiz');
+      renderQuestao();
+    }
+
+    function renderQuestao() {
+      const questao = provas[currentProva][currentQuestao];
+      const total = 20;
+      const num = currentQuestao + 1;
+
+      document.getElementById('questao-num').textContent = `Questão ${num} de ${total}`;
+      document.getElementById('progress-bar').style.width = `${(num / total) * 100}%`;
+
+      const badge = document.getElementById('diff-badge');
+      badge.textContent = questao.d === 'facil' ? 'Fácil' : questao.d === 'medio' ? 'Médio' : 'Difícil';
+      badge.className = 'difficulty diff-' + questao.d;
+
+      document.getElementById('question-text').textContent = questao.q;
+
+      const alts = document.getElementById('alternatives');
+      alts.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      questao.a.forEach((texto, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'alt-btn' + (respostas[currentQuestao] === idx ? ' selected' : '');
+        btn.innerHTML = `<span class="alt-letter">${letters[idx]}</span><span>${texto}</span>`;
+        btn.onclick = () => selecionarAlt(idx);
+        alts.appendChild(btn);
+      });
+
+      selectedAlt = respostas[currentQuestao];
+      const btnNext = document.getElementById('btn-next');
+      btnNext.disabled = selectedAlt === null;
+      btnNext.textContent = currentQuestao === 19 ? 'Finalizar Prova' : 'Próxima';
+
+      // Animação
+      const card = document.getElementById('question-card');
+      card.style.animation = 'none';
+      card.offsetHeight;
+      card.style.animation = 'slideIn 0.35s ease';
+    }
+
+    function selecionarAlt(idx) {
+      selectedAlt = idx;
+      respostas[currentQuestao] = idx;
+      document.querySelectorAll('.alt-btn').forEach((btn, i) => {
+        btn.classList.toggle('selected', i === idx);
+      });
+      document.getElementById('btn-next').disabled = false;
+    }
+
+    function proximaQuestao() {
+      if (selectedAlt === null) return;
+      if (currentQuestao < 19) {
+        currentQuestao++;
+        selectedAlt = respostas[currentQuestao];
+        renderQuestao();
+      } else {
+        finalizarProva();
+      }
+    }
+
+    function finalizarProva() {
+      let acertos = 0;
+      provas[currentProva].forEach((q, i) => {
+        if (respostas[i] === q.c) acertos++;
+      });
+      const nota = (acertos / 20) * 10;
+      const notaArred = Math.round(nota * 10) / 10;
+
+      setNota(currentProva, notaArred);
+
+      // Resultado
+      document.getElementById('res-nota').textContent = notaArred.toFixed(1).replace('.', ',') + ' / 10';
+      document.getElementById('res-acertos').textContent = acertos + ' / 20';
+      document.getElementById('res-erros').textContent = (20 - acertos) + ' / 20';
+      document.getElementById('res-perc').textContent = Math.round((acertos / 20) * 100) + '%';
+
+      const tit = getTitulacao(notaArred);
+      const titEl = document.getElementById('titulacao');
+      titEl.textContent = tit.texto;
+      titEl.className = 'titulacao ' + tit.classe;
+
+      document.getElementById('funny-msg').textContent = getFunnyMsg(notaArred);
+
+      showScreen('result');
+    }
+
+    function refazerProva() {
+      iniciarProva(currentProva);
+    }
+
+    function voltarHome() {
+      showScreen('home');
+      renderHome();
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Init
+    renderHome();
+  </script>
+</body>
+</html>
